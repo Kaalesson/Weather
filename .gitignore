@@ -7,6 +7,7 @@ __pycache__/
 *.so
 
 # Distribution / packaging
+weather_app/context_processors.py
 .Python
 build/
 develop-eggs/
@@ -26,6 +27,8 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+media
+stati
 
 # PyInstaller
 #  Usually these files are written by a python script from a template

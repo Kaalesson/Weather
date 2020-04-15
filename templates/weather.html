@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %} Актуальная погода {% endblock %}
+
+{% block content %}
+<main role="main" class="container">
+
+    <div class="table">
+        <div class="text-center">
+            <p class="card-text">
+                <li class="list-group-item">
+                    <div class="h6 text-muted">
+                        Сейчас температура {{ temp }} °C, ощущается как {{ feels_like }} °C, {{ weather_condition }}.<br>
+                        Скорость ветра {{ wind_speed }} м/c, давление {{ pressure }} мм рт. ст.<br>
+                        Влажность воздуха {{ humidity }}%.<br>
+                    </div>
+                </li>
+        </p>
+            <a class="btn btn-primary" href="{% url 'index' %}" role="button">
+                На главную страницу
+            </a>
+        </div>
+    </div>
+</main>
+
+{% endblock %}

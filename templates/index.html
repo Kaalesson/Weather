@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %} Погода {% endblock %}
+
+{% block content %}
+<main role="main" class="container">
+
+    <div class="table">
+        <div class="text-center">
+            <h1> {{ info }} </h1>
+            <a class="btn btn-primary" href="{% url 'weather_day' %}" role="button">
+                Узнать погоду
+            </a>
+        </div>
+    </div>
+</main>
+
+{% endblock %}
