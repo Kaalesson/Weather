@@ -4,24 +4,32 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>{% block title %}Заголовок страницы{% endblock %} | Yatube</title>
+    <title>{% block title %}Заголовок страницы{% endblock %}</title>
     <!-- Загрузка статики -->
     {% load static %}
+    <link rel="stylesheet" href="{% static 'bootstrap/dist/css/styles.css' %}">
     <link rel="stylesheet" href="{% static 'bootstrap/dist/css/bootstrap.min.css' %}">
     <script src="{% static 'jquery/dist/jquery.min.js' %}"></script>
     <script src="{% static 'bootstrap/dist/js/bootstrap.min.js' %}"></script>
+    
 </head>
 
 <body>
-    <main>
-        <div class="container">
-            {% block content %}
+{% if img_time.0 == 'Morning' %}
+<header class="masthead_morning">
+{% elif img_time.0 == 'Day' %}
+<header class="masthead_day">
+{% elif img_time.0 == 'Evening' %}
+<header class="masthead_evening">
+{% elif img_time.0 == 'Night' %}
+<header class="masthead_night">
+{% endif %}
+   
+    {% block content %}
 
-            {% endblock content %}
-        </div>
-    </main>
-    {% include 'footer.html' %}
-
+    {% endblock content %}
+  
+</header>
 </body>
 
 </html>

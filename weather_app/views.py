@@ -1,79 +1,63 @@
 import os
-import datetime as dt
 
 from dotenv import load_dotenv
 import requests
-
 from django.shortcuts import render
+
+from .forms import Cityform
 
 load_dotenv()
 
 
-TIME = time = dt.datetime.now()
-URL = 'https://api.weather.yandex.ru/v1/forecast/'
-YANDEX_WEATHER_TOKEN = os.getenv('YANDEX_WEATHER_TOKEN')
-CONDITION_DATA = {
-    'clear': 'ясно',
-    'partly-cloudy': 'малооблачно',
-    'cloudy': 'облачно с прояснениями',   
-    'overcast': 'пасмурно',
-    'partly-cloudy-and-light-rain': 'небольшой дождь',
-    'partly-cloudy-and-rain': 'дождь',
-    'overcast-and-rain': 'сильный дождь',
-    'overcast-thunderstorms-with-rain': 'сильный дождь, гроза',
-    'cloudy-and-light-rain': 'небольшой дождь',
-    'overcast-and-light-rain': 'небольшой дождь',
-    'cloudy-and-rain': 'дождь',
-    'overcast-and-wet-snow': 'дождь со снегом',
-    'partly-cloudy-and-light-snow': 'небольшой снег',
-    'partly-cloudy-and-snow': 'снег',
-    'overcast-and-snow': 'снегопад',
-    'cloudy-and-light-snow': 'небольшой снег',
-    'overcast-and-light-snow': 'небольшой снег',
-    'cloudy-and-snow': 'снег',
-}
+URL = 'https://api.openweathermap.org/data/2.5/weather/'
+PROXI = {'https': '144.217.101.242:3129'}
+TOKEN = os.getenv('TOKEN')
 
 
 def index(request):
-    hour = int(TIME.strftime('%H'))
-    if hour >= 12 and hour < 18:
-        info = 'Добрый день!'
-    elif hour > 18 and hour < 24:
-        info = 'Добрый вечер!'
-    elif hour >= 0 and hour < 6:
-        info = 'Доброй ночи!'
-    else:
-        info = 'Добре утро!'
-    return render(request, 'index.html', {'info': info})
+    form = Cityform()
+    return render(request, 'index.html', {'form': form})
 
 
 def weather_day(request):
-    headers = {'X-Yandex-API-Key': f'{YANDEX_WEATHER_TOKEN}'}
-    params = {}
+    form = Cityform(request.POST or None)
+    if form.is_valid():
+        cityname = form.cleaned_data.get("city_name")
+
+    params = {
+        'q': f'{cityname}',
+        'units': 'metric',
+        'lang': 'ru',
+        'appid': f'{TOKEN}',
+    }
 
     try:
-        weather_params_all = requests.get(
+        weather_params = requests.post(
             url=URL,
-            params=params,
-            headers=headers).json()
-
-        weather_params = weather_params_all['fact']
-        condition = CONDITION_DATA[weather_params['condition']]
-
-        return render(request, 'weather.html', {
-            'temp': weather_params['temp'],
-            'feels_like': weather_params['feels_like'],
-            'weather_condition': condition,
-            'wind_speed': weather_params['wind_speed'],
-            'pressure': weather_params['pressure_mm'],
-            'humidity': weather_params['humidity'],
-        })
-
-    except requests.HTTPError as err:
-        code = err.response.status_code
-        print(f'Ошибка, status code: {code}')
-        return {}
+            params=params, proxies=PROXI).json()
 
     except requests.RequestException:
         print('Ошибка при получении данных')
-        return {}
+        return render(request, '404.html')
+
+    if weather_params['cod'] == 200:
+        condition = weather_params['weather'][0]['description']
+        pressure = int(weather_params['main']['pressure'] * 0.750062)
+
+        vars = {
+            'cod': weather_params['cod'],
+            'pressure': pressure,
+            'condition': condition,
+            'cityname': cityname,
+            'weather': weather_params['weather'],
+            'main': weather_params['main'],
+            'wind': weather_params['wind'],
+        }
+        return render(request, 'weather.html', {'vars': vars})
+
+    else:
+        vars = {
+            'cod': weather_params['cod'],
+            'cityname': cityname,
+        }
+        return render(request, 'weather.html', {'vars': vars})

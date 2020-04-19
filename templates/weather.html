@@ -2,24 +2,29 @@
 {% block title %} Актуальная погода {% endblock %}
 
 {% block content %}
-<main role="main" class="container">
 
-    <div class="table">
-        <div class="text-center">
-            <p class="card-text">
-                <li class="list-group-item">
-                    <div class="h6 text-muted">
-                        Сейчас температура {{ temp }} °C, ощущается как {{ feels_like }} °C, {{ weather_condition }}.<br>
-                        Скорость ветра {{ wind_speed }} м/c, давление {{ pressure }} мм рт. ст.<br>
-                        Влажность воздуха {{ humidity }}%.<br>
-                    </div>
-                </li>
-        </p>
-            <a class="btn btn-primary" href="{% url 'index' %}" role="button">
-                На главную страницу
-            </a>
+<div class="container h-100">
+
+    <div class="row h-100 align-items-center justify-content-center text-center">
+        <div class="col-lg-10 align-self-end">
+            <h1 class="text-uppercase text-white font-weight-bold">{{ vars.cityname }}</h1>
+            <hr class="divider my-4">
+        </div>
+        <div class="col-lg-8 align-self-baseline">
+            <p class="text-white-75 font-weight-light mb-5">
+                {% if vars.cod == 200 %}
+                Сейчас температура {{ vars.main.temp }} °C, ощущается как
+                {{ vars.main.feels_like }} °C, {{ vars.condition }}.<br>
+                Скорость ветра {{ vars.wind.speed }} м/c, давление {{ vars.pressure }} мм рт. ст.<br>
+                Влажность воздуха {{ vars.main.humidity }}%.<br>
+                {% else %}
+                А где это?
+                {% endif %}
+            </p>
+            <a class="btn btn-primary" href="{% url 'index' %}">На главную страницу</a>
         </div>
     </div>
-</main>
+</div>
+
 
 {% endblock %}
